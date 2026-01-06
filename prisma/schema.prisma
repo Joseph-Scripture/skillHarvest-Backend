@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  password     String
+  experience   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // relations
+  videos       Video[]
+  followers    Follow[] @relation("followers")
+  following    Follow[] @relation("following")
+  bookmarks    Bookmark[]
+  comments     Comment[]
+  ratings      Rating[]
+
+}
+
+model Follow {
+  id            String @id @default(uuid())
+
+  follower      User   @relation("following", fields: [followerId], references: [id])
+  followerId    String
+
+  following     User   @relation("followers", fields: [followingId], references: [id])
+  followingId   String
+
+  @@unique([followerId, followingId])
+}
+
+model Video {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  videoUrl    String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // ownership
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  // relations
+  crops       VideoCrop[]
+  tags        VideoTag[]
+  comments    Comment[]
+  ratings     Rating[]
+  bookmarks   Bookmark[]
+
+  @@index([createdAt])
+}
+
+model Crop {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  videos    VideoCrop[]
+}
+
+model VideoCrop {
+  video   Video @relation(fields: [videoId], references: [id])
+  videoId String
+
+  crop    Crop  @relation(fields: [cropId], references: [id])
+  cropId  String
+
+  @@id([videoId, cropId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+
+  videos    VideoTag[]
+}
+
+model VideoTag {
+  video   Video @relation(fields: [videoId], references: [id])
+  videoId String
+
+  tag     Tag   @relation(fields: [tagId], references: [id])
+  tagId   String
+
+  @@id([videoId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+
+  video    Video @relation(fields: [videoId], references: [id])
+  videoId  String
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  value     Int
+
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+
+  video    Video @relation(fields: [videoId], references: [id])
+  videoId  String
+
+  @@unique([userId, videoId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+
+  video    Video @relation(fields: [videoId], references: [id])
+  videoId  String
+
+  @@unique([userId, videoId])
+}
