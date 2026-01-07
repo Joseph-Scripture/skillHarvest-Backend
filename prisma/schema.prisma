@@ -10,57 +10,58 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url = env("DATABASE_URL")
 }
+
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  name         String
-  password     String
-  experience   Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         String   @id @default(uuid())
+  email      String   @unique
+  name       String
+  password   String
+  experience Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // relations
-  videos       Video[]
-  followers    Follow[] @relation("followers")
-  following    Follow[] @relation("following")
-  bookmarks    Bookmark[]
-  comments     Comment[]
-  ratings      Rating[]
-
+  videos    Video[]
+  followers Follow[]   @relation("followers")
+  following Follow[]   @relation("following")
+  bookmarks Bookmark[]
+  comments  Comment[]
+  ratings   Rating[]
 }
 
 model Follow {
-  id            String @id @default(uuid())
+  id String @id @default(uuid())
 
-  follower      User   @relation("following", fields: [followerId], references: [id])
-  followerId    String
+  follower   User   @relation("following", fields: [followerId], references: [id])
+  followerId String
 
-  following     User   @relation("followers", fields: [followingId], references: [id])
-  followingId   String
+  following   User   @relation("followers", fields: [followingId], references: [id])
+  followingId String
 
   @@unique([followerId, followingId])
 }
 
 model Video {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   title       String
   description String
   videoUrl    String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // ownership
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
   // relations
-  crops       VideoCrop[]
-  tags        VideoTag[]
-  comments    Comment[]
-  ratings     Rating[]
-  bookmarks   Bookmark[]
+  crops     VideoCrop[]
+  tags      VideoTag[]
+  comments  Comment[]
+  ratings   Rating[]
+  bookmarks Bookmark[]
 
   @@index([createdAt])
 }
@@ -70,32 +71,32 @@ model Crop {
   name      String   @unique
   createdAt DateTime @default(now())
 
-  videos    VideoCrop[]
+  videos VideoCrop[]
 }
 
 model VideoCrop {
-  video   Video @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id])
   videoId String
 
-  crop    Crop  @relation(fields: [cropId], references: [id])
-  cropId  String
+  crop   Crop   @relation(fields: [cropId], references: [id])
+  cropId String
 
   @@id([videoId, cropId])
 }
 
 model Tag {
-  id        String   @id @default(uuid())
-  name      String   @unique
+  id   String @id @default(uuid())
+  name String @unique
 
-  videos    VideoTag[]
+  videos VideoTag[]
 }
 
 model VideoTag {
-  video   Video @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id])
   videoId String
 
-  tag     Tag   @relation(fields: [tagId], references: [id])
-  tagId   String
+  tag   Tag    @relation(fields: [tagId], references: [id])
+  tagId String
 
   @@id([videoId, tagId])
 }
@@ -105,22 +106,22 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
 
-  user      User   @relation(fields: [userId], references: [id])
-  userId    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  video    Video @relation(fields: [videoId], references: [id])
-  videoId  String
+  video   Video  @relation(fields: [videoId], references: [id])
+  videoId String
 }
 
 model Rating {
-  id        String   @id @default(uuid())
-  value     Int
+  id    String @id @default(uuid())
+  value Int
 
-  user      User   @relation(fields: [userId], references: [id])
-  userId    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  video    Video @relation(fields: [videoId], references: [id])
-  videoId  String
+  video   Video  @relation(fields: [videoId], references: [id])
+  videoId String
 
   @@unique([userId, videoId])
 }
@@ -129,11 +130,11 @@ model Bookmark {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
-  user      User   @relation(fields: [userId], references: [id])
-  userId    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  video    Video @relation(fields: [videoId], references: [id])
-  videoId  String
+  video   Video  @relation(fields: [videoId], references: [id])
+  videoId String
 
   @@unique([userId, videoId])
 }
