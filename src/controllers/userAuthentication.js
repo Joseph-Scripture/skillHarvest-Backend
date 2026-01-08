@@ -4,9 +4,9 @@ import { generateToken } from "../utils/generateToken.js";
 
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, 
+    secure: true,
+    sameSite: 'none',
+    maxAge: 10 * 24 * 60 * 60 * 1000, 
 };
 
 export const register = async (req, res) => {
@@ -80,7 +80,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 

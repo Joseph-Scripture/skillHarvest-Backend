@@ -1,13 +1,45 @@
-import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
+import prisma from "../config/db.js";
 
-export const validateRequest = (req, res, next) => {
-    const errors = validationResult(req);
+export const protect = async (req, res, next) => {
+    try {
+    // 1. Read token from cookie
+        const token = req.cookies?.token;
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors: errors.array().map(err => err.msg),
+        if (!token) {
+            return res.status(401).json({
+            message: "Not authenticated, token missing",
+            });
+        }
+
+    // 2. Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // 3. Fetch user from DB
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+            select: {
+            id: true,
+            email: true,
+            name: true,
+            experience: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(401).json({
+            message: "User no longer exists",
+            });
+        }
+
+        // 4. Attach user to request
+        req.user = user;
+
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(401).json({
+            message: "Invalid or expired token",
         });
     }
-
-    next();
 };
