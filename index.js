@@ -4,6 +4,8 @@ dotenv.config();
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from 'cookie-parser'
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './src/config/swagger.js';
 
 
 // Importing routes
@@ -23,6 +25,9 @@ app.use(express.json());
 // Using routes
 app.use("/api/auth", AuthenticationRoutes);
 app.use("/api/video", uploadVideoRoutes);
+
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
