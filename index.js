@@ -12,6 +12,7 @@ import swaggerSpec from './src/config/swagger.js';
 import AuthenticationRoutes from "./src/routes/AuthenticationRoutes.js";
 import uploadVideoRoutes from "./src/routes/uploadVideoRoutes.js";
 import commentRoutes from "./src/routes/commentRoutes.js";
+import ratingsRoutes from "./src/routes/ratingsRoutes.js";
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", AuthenticationRoutes);
 app.use("/api/video", uploadVideoRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/ratings", ratingsRoutes);
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

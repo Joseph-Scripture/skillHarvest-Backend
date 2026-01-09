@@ -83,7 +83,7 @@ router.get('/:videoId', getVideoComments);
  *         description: Comment not found
  *       500:
  *         description: Internal server error
- *   put:
+ *   patch:
  *     summary: Update a comment
  *     tags: [Comments]
  *     security:
