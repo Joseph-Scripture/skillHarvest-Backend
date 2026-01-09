@@ -6,11 +6,11 @@ const cookieOptions = {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
-    maxAge: 10 * 24 * 60 * 60 * 1000, 
+    maxAge: 10 * 24 * 60 * 60 * 1000,
 };
 
 export const register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, farmLocation, farmType, gender, phoneNumber, DateOfBirth } = req.body;
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -28,6 +28,11 @@ export const register = async (req, res) => {
                 name,
                 email,
                 password: hashedPassword,
+                farmLocation,
+                farmType,
+                gender,
+                phoneNumber,
+                DateOfBirth: DateOfBirth ? new Date(DateOfBirth) : null,
             },
         });
 
@@ -35,9 +40,13 @@ export const register = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
-        return res.status(201).json({
+        const { password: _password, email: _email, ...userWithoutPassword } = user;
+
+        return res.status(201).json({   
             success: true,
             message: "User registered successfully",
+            token,
+            user: userWithoutPassword,
         });
     } catch (error) {
         console.error(error);
@@ -67,10 +76,13 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
+        const { password: _password, email: _email, ...userWithoutPassword } = user;
+
         return res.status(200).json({
             success: true,
             message: "Login successful",
-            token
+            token,
+            user: userWithoutPassword,
         });
     } catch (error) {
         console.error(error);

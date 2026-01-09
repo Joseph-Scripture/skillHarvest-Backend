@@ -1,6 +1,4 @@
-
 import prisma from "../config/db.js";
-
 export const createVideo = async (req, res) => {
     let { title, description, tags = [] } = req.body;
 

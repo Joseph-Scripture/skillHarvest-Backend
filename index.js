@@ -13,6 +13,8 @@ import AuthenticationRoutes from "./src/routes/AuthenticationRoutes.js";
 import uploadVideoRoutes from "./src/routes/uploadVideoRoutes.js";
 import commentRoutes from "./src/routes/commentRoutes.js";
 import ratingsRoutes from "./src/routes/ratingsRoutes.js";
+import bookmarkRoutes from './src/routes/bookmarkRoutes.js';
+import followRoutes from './src/routes/followRoutes.js';
 
 
 const app = express();
@@ -28,6 +30,8 @@ app.use("/api/auth", AuthenticationRoutes);
 app.use("/api/video", uploadVideoRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/ratings", ratingsRoutes);
+app.use("/api/", bookmarkRoutes);
+app.use("/api/follow", followRoutes);
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
