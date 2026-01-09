@@ -11,6 +11,7 @@ import swaggerSpec from './src/config/swagger.js';
 // Importing routes
 import AuthenticationRoutes from "./src/routes/AuthenticationRoutes.js";
 import uploadVideoRoutes from "./src/routes/uploadVideoRoutes.js";
+import commentRoutes from "./src/routes/commentRoutes.js";
 
 
 const app = express();
@@ -19,12 +20,12 @@ app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
-
-
+app.use(express.urlencoded({ extended: true }));
 
 // Using routes
 app.use("/api/auth", AuthenticationRoutes);
 app.use("/api/video", uploadVideoRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
