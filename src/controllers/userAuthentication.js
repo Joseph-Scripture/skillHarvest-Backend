@@ -4,13 +4,13 @@ import { generateToken } from "../utils/generateToken.js";
 
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, 
+    secure: true,
+    sameSite: 'none',
+    maxAge: 10 * 24 * 60 * 60 * 1000,
 };
 
 export const register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, farmLocation, farmType, gender, phoneNumber, DateOfBirth, experience } = req.body;
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -28,6 +28,12 @@ export const register = async (req, res) => {
                 name,
                 email,
                 password: hashedPassword,
+                farmLocation,
+                farmType,
+                gender,
+                phoneNumber,
+                DateOfBirth: DateOfBirth && !isNaN(new Date(DateOfBirth)) ? new Date(DateOfBirth) : null,
+                experience,
             },
         });
 
@@ -35,9 +41,13 @@ export const register = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
+        const { password: _password, email: _email, ...userWithoutPassword } = user;
+
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
+            token,
+            user: userWithoutPassword,
         });
     } catch (error) {
         console.error(error);
@@ -46,7 +56,7 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, phoneNumber, name } = req.body;
 
     try {
         const user = await prisma.user.findUnique({
@@ -54,6 +64,10 @@ export const login = async (req, res) => {
         });
 
         if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        if (phoneNumber !== user.phoneNumber || name !== user.name) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
@@ -67,9 +81,13 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
+        const { password: _password, email: _email, ...userWithoutPassword } = user;
+
         return res.status(200).json({
-        success: true,
-        message: "Login successful",
+            success: true,
+            message: "Login successful",
+            token,
+            user: userWithoutPassword,
         });
     } catch (error) {
         console.error(error);
@@ -80,7 +98,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
