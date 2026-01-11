@@ -41,9 +41,11 @@ export const registerValidator = [
     body("DateOfBirth")
         .trim()
         .notEmpty()
-        .withMessage("Date of birth is required"),
+        .withMessage("Date of birth is required")
+        .isISO8601()
+        .withMessage("Date of birth must be a valid ISO 8601 date (YYYY-MM-DD)"),
 
-    ];
+];
 
 export const loginValidator = [
     body("email")
@@ -53,5 +55,12 @@ export const loginValidator = [
     body("password")
         .notEmpty()
         .withMessage("Password is required"),
-    body('')
+    body('name')
+        .trim()
+        .notEmpty()
+        .withMessage("Name is required"),
+    body('phoneNumber')
+        .trim()
+        .notEmpty()
+        .withMessage("Phone number is required"),
 ];

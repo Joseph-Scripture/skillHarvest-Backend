@@ -29,6 +29,17 @@ export const getVideosByUser = async (req, res) => {
                         crop: true,
                     },
                 },
+                comments: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                experience: true,
+                            },
+                        },
+                    }
+                },
                 _count: {
                     select: {
                         comments: true,

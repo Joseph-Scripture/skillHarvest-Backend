@@ -10,7 +10,7 @@ const cookieOptions = {
 };
 
 export const register = async (req, res) => {
-    const { name, email, password, farmLocation, farmType, gender, phoneNumber, DateOfBirth } = req.body;
+    const { name, email, password, farmLocation, farmType, gender, phoneNumber, DateOfBirth, experience } = req.body;
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -32,7 +32,8 @@ export const register = async (req, res) => {
                 farmType,
                 gender,
                 phoneNumber,
-                DateOfBirth: DateOfBirth ? new Date(DateOfBirth) : null,
+                DateOfBirth: DateOfBirth && !isNaN(new Date(DateOfBirth)) ? new Date(DateOfBirth) : null,
+                experience,
             },
         });
 
@@ -42,7 +43,7 @@ export const register = async (req, res) => {
 
         const { password: _password, email: _email, ...userWithoutPassword } = user;
 
-        return res.status(201).json({   
+        return res.status(201).json({
             success: true,
             message: "User registered successfully",
             token,
