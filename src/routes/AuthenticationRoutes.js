@@ -4,6 +4,7 @@ import { register, login, logout } from '../controllers/userAuthentication.js';
 import { registerValidator, loginValidator } from "../validators/authValidators.js";
 import { validateRequest } from "../middleware/validateRequest.js";
 import { protect } from '../middleware/authMiddleware.js'
+import {authLimit} from '../middleware/rateLimit.js'
 
 
 const router = Router();
@@ -42,7 +43,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/register", registerValidator, validateRequest, register);
+router.post("/register", registerValidator, authLimit, validateRequest, register);
 
 /**
  * @swagger
@@ -72,7 +73,7 @@ router.post("/register", registerValidator, validateRequest, register);
  *       500:
  *         description: Internal server error
  */
-router.post("/login", loginValidator, validateRequest, login);
+router.post("/login", loginValidator, authLimit, validateRequest, login);
 
 /**
  * @swagger

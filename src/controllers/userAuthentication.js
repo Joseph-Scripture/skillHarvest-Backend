@@ -55,7 +55,7 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, phoneNumber, name } = req.body;
 
     try {
         const user = await prisma.user.findUnique({
@@ -63,6 +63,10 @@ export const login = async (req, res) => {
         });
 
         if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        if (phoneNumber !== user.phoneNumber || name !== user.name) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 

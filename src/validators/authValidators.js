@@ -18,6 +18,30 @@ export const registerValidator = [
         .matches(/[a-z]/).withMessage("Password must contain at least one lowercase letter")
         .matches(/\d/).withMessage("Password must contain at least one number")
         .matches(/[@$!%*?&-_#~`]/).withMessage("Password must contain at least one special character (@$!%*?&_#~`)"),
+    body("farmLocation")
+        .trim()
+        .notEmpty()
+        .withMessage("Farm location is required"),
+
+    body("farmType")
+        .trim()
+        .notEmpty()
+        .withMessage("Farm type is required"),
+
+    body("gender")
+        .trim()
+        .notEmpty()
+        .withMessage("Gender is required"),
+
+    body("phoneNumber")
+        .trim()
+        .notEmpty()
+        .withMessage("Phone number is required"),
+
+    body("DateOfBirth")
+        .trim()
+        .notEmpty()
+        .withMessage("Date of birth is required"),
 
     ];
 
@@ -29,4 +53,5 @@ export const loginValidator = [
     body("password")
         .notEmpty()
         .withMessage("Password is required"),
+    body('')
 ];

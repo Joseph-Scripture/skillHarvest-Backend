@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { rateVideo, getVideoRating } from '../controllers/ratingsController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import {ratingLimit} from '../middleware/rateLimit.js'
 
 const router = Router();
 
@@ -58,7 +59,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/:videoId', protect, rateVideo);
+router.post('/:videoId', protect,ratingLimit, rateVideo);
 router.get('/:videoId', getVideoRating);
 
 export default router;

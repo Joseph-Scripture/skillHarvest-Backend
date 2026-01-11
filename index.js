@@ -15,6 +15,7 @@ import commentRoutes from "./src/routes/commentRoutes.js";
 import ratingsRoutes from "./src/routes/ratingsRoutes.js";
 import bookmarkRoutes from './src/routes/bookmarkRoutes.js';
 import followRoutes from './src/routes/followRoutes.js';
+import passwordResetRoutes from './src/routes/passwordResetRoutes.js';
 
 
 const app = express();
@@ -32,7 +33,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/ratings", ratingsRoutes);
 app.use("/api/", bookmarkRoutes);
 app.use("/api/follow", followRoutes);
-
+app.use("/api/password-reset", passwordResetRoutes);
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

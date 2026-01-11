@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { toggleBookmark, getMyBookmarks } from '../controllers/bookmarksController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import {bookmarkLimit} from '../middleware/rateLimit.js'
 
 const router = Router();
 
@@ -36,7 +37,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/:videoId/bookmark', protect, toggleBookmark);
+router.post('/:videoId/bookmark', protect,bookmarkLimit, toggleBookmark);
 
 /**
  * @swagger
@@ -54,6 +55,6 @@ router.post('/:videoId/bookmark', protect, toggleBookmark);
  *       500:
  *         description: Internal server error
  */
-router.get('/bookmarks', protect, getMyBookmarks);
+router.get('/bookmarks', protect,bookmarkLimit, getMyBookmarks);
 
 export default router;

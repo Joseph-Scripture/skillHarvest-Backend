@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createComment, deleteComment, getVideoComments, updateComment } from '../controllers/commentController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import {commentLimit} from '../middleware/rateLimit.js'
 
 const router = Router();
 
@@ -56,7 +57,7 @@ const router = Router();
  *         description: Internal server error
  */
 
-router.post('/:videoId', protect, createComment);
+router.post('/:videoId', protect,commentLimit, createComment);
 router.get('/:videoId', getVideoComments);
 
 /**
@@ -117,7 +118,7 @@ router.get('/:videoId', getVideoComments);
  *         description: Internal server error
  */
 
-router.delete('/:commentId', protect, deleteComment);
-router.patch('/:commentId', protect, updateComment);
+router.delete('/:commentId', protect,commentLimit, deleteComment);
+router.patch('/:commentId', protect,commentLimit, updateComment);
 
 export default router;
