@@ -3,7 +3,7 @@ import { uploadVideo } from '../middleware/uploadVideoMiddleware.js';
 import { createVideo } from '../controllers/videoCreationController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { getGlobalVideos, getVideosByTag, getVideosByUser } from '../controllers/getVideosController.js';
-import {videoUploadLimit} from '../middleware/rateLimit.js'
+import { videoUploadLimit } from '../middleware/rateLimit.js'
 
 const router = Router();
 
@@ -37,7 +37,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/upload', protect, videoUploadLimit, uploadVideo, createVideo);
+router.post('/upload',protect, videoUploadLimit, uploadVideo, createVideo);
 
 /**
  * @swagger
