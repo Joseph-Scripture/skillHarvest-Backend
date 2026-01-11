@@ -16,6 +16,7 @@ export const createVideo = async (req, res) => {
 
 
     try {
+
         if (!title || !description) {
             return res.status(400).json({ message: "Title and description are required" });
         }
@@ -24,6 +25,18 @@ export const createVideo = async (req, res) => {
             return res.status(400).json({ message: "Video file is required" });
         }
 
+        const durationInSeconds = req.file.duration;
+        
+        if (!durationInSeconds || durationInSeconds < 120 || durationInSeconds > 300) {
+            
+            if (req.file.filename) {
+                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'video' });
+            }
+        
+            return res.status(400).json({ 
+                message: "Invalid video: Duration must be between 2 and 5 minutes." 
+            });
+        }
         const rawUrl = req.file.path;
         let videoUrl = rawUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1280/");
 
@@ -31,17 +44,15 @@ export const createVideo = async (req, res) => {
             videoUrl = `${videoUrl}.mp4`;
         }
 
-        // 2. Create video in DB with the OPTIMIZED link
         const video = await prisma.video.create({
             data: {
                 title,
                 description,
-                videoUrl, // Now saving the optimized, playable link
+                videoUrl,
                 userId: req.user.id,
             },
         });
 
-        // 3. Handle tags (Existing logic)
         for (const tagName of tags) {
             const normalized = tagName.trim().toLowerCase();
             const tag = await prisma.tag.upsert({

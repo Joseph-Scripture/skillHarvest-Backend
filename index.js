@@ -39,10 +39,17 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error("Global Error Handler:", err);
-    res.status(500).json({
-        message: "Internal Server Error",
-        error: err.message || "Unknown error"
+    const statusCode = err.status || err.statusCode || 500;
+
+    // Only log actual 500 server errors to the terminal
+    if (statusCode === 500) {
+        console.error("Internal Server Error:", err);
+    }
+
+    res.status(statusCode).json({
+        success: false,
+        message: statusCode === 500 ? "Internal Server Error" : err.message,
+        ...(process.env.NODE_ENV === "development" && { stack: err.stack })
     });
 });
 
