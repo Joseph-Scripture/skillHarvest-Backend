@@ -47,6 +47,17 @@ export const getVideosByUser = async (req, res) => {
                         },
                     },
                 },
+                comments: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                experience: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
