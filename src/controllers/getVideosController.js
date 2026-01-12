@@ -47,13 +47,40 @@ export const getVideosByUser = async (req, res) => {
                         bookmarks: true,
                     },
                 },
+                comments: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                experience: true,
+                            },
+                        },
+                    },
+                },
+                comments: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                experience: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
         const formattedVideos = videos.map(video => ({
             ...video,
             tags: video.tags.map(vt => vt.tag),
-            crops: video.crops.map(vc => vc.crop)
+            crops: video.crops.map(vc => vc.crop),
+            comments: video.comments.map(vc => ({
+                user: vc.user,
+                content: vc.content,
+                createdAt: vc.createdAt,
+            })),
         }));
 
         return res.status(200).json({
@@ -116,6 +143,17 @@ export const getVideosByTag = async (req, res) => {
                             bookmarks: true,
                         },
                     },
+                    comments: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    experience: true,
+                                },
+                            },
+                        },
+                    },
                 },
             }),
             prisma.video.count({
@@ -134,7 +172,12 @@ export const getVideosByTag = async (req, res) => {
         const formattedVideos = videos.map(video => ({
             ...video,
             tags: video.tags.map(vt => vt.tag),
-            crops: video.crops.map(vc => vc.crop)
+            crops: video.crops.map(vc => vc.crop),
+            comments: video.comments.map(vc => ({
+                user: vc.user,
+                content: vc.content,
+                createdAt: vc.createdAt,
+            })),
         }));
 
         return res.status(200).json({
@@ -181,6 +224,17 @@ export const getGlobalVideos = async (req, res) => {
                     crops: {
                         include: { crop: true },
                     },
+                    comments: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    experience: true,
+                                },
+                            },
+                        }
+                    },
                     _count: {
                         select: {
                             comments: true,
@@ -196,7 +250,12 @@ export const getGlobalVideos = async (req, res) => {
         const formattedVideos = videos.map(video => ({
             ...video,
             tags: video.tags.map(vt => vt.tag),
-            crops: video.crops.map(vc => vc.crop)
+            crops: video.crops.map(vc => vc.crop),
+            comments: video.comments.map(vc => ({
+                user: vc.user,
+                content: vc.content,
+                createdAt: vc.createdAt,
+            })),
         }));
 
         return res.status(200).json({
