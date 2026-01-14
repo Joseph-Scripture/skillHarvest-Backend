@@ -20,7 +20,54 @@ import passwordResetRoutes from './src/routes/passwordResetRoutes.js';
 
 const app = express();
 
-app.use(cors());
+
+
+// app.use(cors(corsOptions));
+
+
+const allowedOrigins = [
+    'https://skill-harvest.vercel.app',
+    'http://localhost:5173',
+];
+
+// 2. Robust CORS Configuration
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Log the origin for debugging on Render
+        console.log('[CORS Filter] Incoming Request Origin:', origin);
+
+        // Fail-safe for missing origin during redirects
+        const effectiveOrigin = origin || '';
+
+        if (!effectiveOrigin) {
+            console.log('[CORS Filter] Allowing missing origin (likely direct or redirect)');
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(effectiveOrigin)) {
+            callback(null, true);
+        } else {
+            console.log(`[CORS Filter] Blocked Origin: ${effectiveOrigin}`);
+            callback(null, false);
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Accept',
+        'Origin'
+    ],
+};
+
+
+
+// 2. CORS (Must be before any routes or body parsers)
+app.use(cors(corsOptions));
+
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
