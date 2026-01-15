@@ -28,6 +28,7 @@ const app = express();
 const allowedOrigins = [
     'https://skill-harvest.vercel.app',
     'http://localhost:5173',
+    'http://localhost:5500'
 ];
 
 // 2. Robust CORS Configuration
