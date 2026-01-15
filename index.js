@@ -28,47 +28,33 @@ const app = express();
 const allowedOrigins = [
     'https://skill-harvest.vercel.app',
     'http://localhost:5173',
-    'http://localhost:5500'
+    'http://localhost:5500',
+    'http://127.0.0.1:5000'
 ];
 
-// 2. Robust CORS Configuration
 const corsOptions = {
     origin: (origin, callback) => {
-        // Log the origin for debugging on Render
-        console.log('[CORS Filter] Incoming Request Origin:', origin);
-
-        // Fail-safe for missing origin during redirects
-        const effectiveOrigin = origin || '';
-
-        if (!effectiveOrigin) {
-            console.log('[CORS Filter] Allowing missing origin (likely direct or redirect)');
+        // 1. Allow internal/non-browser requests (like Postman or mobile)
+        if (!origin) {
             return callback(null, true);
         }
 
-        if (allowedOrigins.includes(effectiveOrigin)) {
+        // 2. Check if the origin is in our whitelist
+        if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            console.log(`[CORS Filter] Blocked Origin: ${effectiveOrigin}`);
-            callback(null, false);
+            // 3. Block unauthorized origins
+            console.error(`[CORS Error] Blocked: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
         }
     },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'Accept',
-        'Origin'
-    ],
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-
-
-// 2. CORS (Must be before any routes or body parsers)
 app.use(cors(corsOptions));
-
-
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
