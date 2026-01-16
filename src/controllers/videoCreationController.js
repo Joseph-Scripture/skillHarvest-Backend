@@ -1,4 +1,7 @@
+import cloudinary from "../config/cloudinary.js";
 import prisma from "../config/db.js";
+
+
 export const createVideo = async (req, res) => {
     let { title, description, tags = [] } = req.body;
 
@@ -6,7 +9,7 @@ export const createVideo = async (req, res) => {
     if (typeof tags === 'string') {
         try {
             if (tags.trim().startsWith('[') && tags.includes("'")) {
-                tags = tags.replace(/'/g, '"'); 
+                tags = tags.replace(/'/g, '"');
             }
             tags = JSON.parse(tags);
         } catch (e) {
@@ -25,20 +28,37 @@ export const createVideo = async (req, res) => {
             return res.status(400).json({ message: "Video file is required" });
         }
 
-        const durationInSeconds = req.file.duration;
-        
+        // Upload directly from buffer to get duration in the same response
+        const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: "skillharvest/videos",
+                    resource_type: "video",
+                },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(req.file.buffer);
+        });
+
+        const durationInSeconds = uploadResult.duration;
+        const publicId = uploadResult.public_id;
+
+        // Apply Cloudinary transformations to the URL
+        let videoUrl = uploadResult.secure_url.replace("/upload/", "/upload/f_auto,q_auto,w_1280/");
+
         if (!durationInSeconds || durationInSeconds < 120 || durationInSeconds > 300) {
-            
-            if (req.file.filename) {
-                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'video' });
+
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId, { resource_type: 'video' });
             }
-        
-            return res.status(400).json({ 
-                message: "Invalid video: Duration must be between 2 and 5 minutes." 
+
+            return res.status(400).json({
+                message: "Invalid video: Duration must be between 2 and 5 minutes."
             });
         }
-        const rawUrl = req.file.path;
-        let videoUrl = rawUrl.replace("/upload/", "/upload/f_auto,q_auto,w_1280/");
 
         if (!videoUrl.toLowerCase().endsWith(".mp4")) {
             videoUrl = `${videoUrl}.mp4`;

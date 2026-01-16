@@ -1,5 +1,12 @@
 import prisma from "../config/db.js";
 
+/**
+ * Create a new comment on a video.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const createComment = async (req, res) => {
     const { videoId } = req.params;
     const { content } = req.body;
@@ -37,10 +44,17 @@ export const createComment = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to create comment",
-        }); 
+        });
     }
 };
 
+/**
+ * Get all comments for a specific video.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const getVideoComments = async (req, res) => {
     const { videoId } = req.params;
 
@@ -71,6 +85,13 @@ export const getVideoComments = async (req, res) => {
     }
 };
 
+/**
+ * Delete a comment.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const deleteComment = async (req, res) => {
     const { commentId } = req.params;
     const userId = req.user.id;
@@ -105,6 +126,13 @@ export const deleteComment = async (req, res) => {
     }
 };
 
+/**
+ * Update a comment.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const updateComment = async (req, res) => {
     const { commentId } = req.params;
     const { content } = req.body;

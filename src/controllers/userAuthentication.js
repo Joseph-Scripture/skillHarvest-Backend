@@ -9,6 +9,7 @@ const cookieOptions = {
     maxAge: 10 * 24 * 60 * 60 * 1000,
 };
 
+
 export const register = async (req, res) => {
     const { name, email, password, farmLocation, farmType, gender, phoneNumber, DateOfBirth, experience } = req.body;
 
@@ -32,7 +33,7 @@ export const register = async (req, res) => {
                 farmType,
                 gender,
                 phoneNumber,
-                DateOfBirth: DateOfBirth && !isNaN(new Date(DateOfBirth)) ? new Date(DateOfBirth) : null,
+                DateOfBirth: DateOfBirth && !Number.isNaN(new Date(DateOfBirth).getTime()) ? new Date(DateOfBirth) : null,
                 experience,
             },
         });
@@ -41,7 +42,7 @@ export const register = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
-        const { password: _password, email: _email, ...userWithoutPassword } = user;
+        const { password: _p, email: _e, ...userWithoutPassword } = user;
 
         return res.status(201).json({
             success: true,
@@ -55,6 +56,7 @@ export const register = async (req, res) => {
     }
 };
 
+
 export const login = async (req, res) => {
     const { email, password, phoneNumber, name } = req.body;
 
@@ -66,6 +68,7 @@ export const login = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
+
 
         if (phoneNumber !== user.phoneNumber || name !== user.name) {
             return res.status(401).json({ message: "Invalid email or password" });
@@ -81,7 +84,7 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
-        const { password: _password, email: _email, ...userWithoutPassword } = user;
+        const { password: _p, email: _e, ...userWithoutPassword } = user;
 
         return res.status(200).json({
             success: true,
@@ -94,6 +97,7 @@ export const login = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 export const logout = async (req, res) => {
     res.clearCookie("token", {

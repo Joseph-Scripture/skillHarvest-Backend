@@ -1,29 +1,28 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  name       String
-  password   String
-  experience String?
-  farmLocation String?
-  farmType String?
-  gender String?
-  phoneNumber String?
-  DateOfBirth DateTime?
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  name               String
+  password           String
+  experience         String?
+  farmLocation       String?
+  farmType           String?
+  gender             String?
+  phoneNumber        String?
+  DateOfBirth        DateTime?
   resetCode          String?
   resetCodeExpiresAt DateTime?
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // relations
   videos    Video[]
@@ -32,6 +31,7 @@ model User {
   bookmarks Bookmark[]
   comments  Comment[]
   ratings   Rating[]
+  likes     Like[]
 }
 
 model Follow {
@@ -51,6 +51,7 @@ model Video {
   title       String
   description String
   videoUrl    String
+  views       Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,6 +66,7 @@ model Video {
   comments  Comment[]
   ratings   Rating[]
   bookmarks Bookmark[]
+  likes     Like[]
 
   @@index([createdAt])
 }
@@ -92,6 +94,19 @@ model Tag {
   name String @unique
 
   videos VideoTag[]
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+
+  video   Video  @relation(fields: [videoId], references: [id])
+  videoId String
+
+  @@unique([userId, videoId])
 }
 
 model VideoTag {

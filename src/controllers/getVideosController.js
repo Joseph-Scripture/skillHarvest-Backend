@@ -1,5 +1,6 @@
 import prisma from '../config/db.js';
 
+
 export const getVideosByUser = async (req, res) => {
     const { userId } = req.params;
 
@@ -29,33 +30,12 @@ export const getVideosByUser = async (req, res) => {
                         crop: true,
                     },
                 },
-                comments: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                experience: true,
-                            },
-                        },
-                    }
-                },
                 _count: {
                     select: {
                         comments: true,
                         ratings: true,
                         bookmarks: true,
-                    },
-                },
-                comments: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                experience: true,
-                            },
-                        },
+                        likes: true,
                     },
                 },
                 comments: {
@@ -74,6 +54,7 @@ export const getVideosByUser = async (req, res) => {
 
         const formattedVideos = videos.map(video => ({
             ...video,
+            views: video.views || 0,
             tags: video.tags.map(vt => vt.tag),
             crops: video.crops.map(vc => vc.crop),
             comments: video.comments.map(vc => ({
@@ -98,7 +79,7 @@ export const getVideosByUser = async (req, res) => {
 };
 
 
-// Get videos by tag
+
 export const getVideosByTag = async (req, res) => {
     const { tag } = req.params;
     const page = Number(req.query.page) || 1;
@@ -141,6 +122,7 @@ export const getVideosByTag = async (req, res) => {
                             comments: true,
                             ratings: true,
                             bookmarks: true,
+                            likes: true,
                         },
                     },
                     comments: {
@@ -171,6 +153,7 @@ export const getVideosByTag = async (req, res) => {
 
         const formattedVideos = videos.map(video => ({
             ...video,
+            views: video.views || 0,
             tags: video.tags.map(vt => vt.tag),
             crops: video.crops.map(vc => vc.crop),
             comments: video.comments.map(vc => ({
@@ -195,6 +178,7 @@ export const getVideosByTag = async (req, res) => {
         });
     }
 };
+
 
 
 export const getGlobalVideos = async (req, res) => {
@@ -240,6 +224,7 @@ export const getGlobalVideos = async (req, res) => {
                             comments: true,
                             ratings: true,
                             bookmarks: true,
+                            likes: true,
                         },
                     },
                 },
@@ -249,6 +234,7 @@ export const getGlobalVideos = async (req, res) => {
 
         const formattedVideos = videos.map(video => ({
             ...video,
+            views: video.views || 0,
             tags: video.tags.map(vt => vt.tag),
             crops: video.crops.map(vc => vc.crop),
             comments: video.comments.map(vc => ({
@@ -273,3 +259,4 @@ export const getGlobalVideos = async (req, res) => {
         });
     }
 };
+
