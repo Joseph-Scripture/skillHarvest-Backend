@@ -107,3 +107,4 @@ const server = app.listen(process.env.PORT, (err) => {
     }
     console.log(`Server is running on port ${process.env.PORT}`);
 });
+server.timeout = 300000; // 5 minutes

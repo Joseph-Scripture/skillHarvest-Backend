@@ -4,6 +4,9 @@ import { createVideo } from '../controllers/videoCreationController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { getGlobalVideos, getVideosByTag, getVideosByUser } from '../controllers/getVideosController.js';
 import { videoUploadLimit } from '../middleware/rateLimit.js'
+import { getSimilarVideos, getTrendingVideos } from '../controllers/trendingController.js';
+import { incrementViews } from '../controllers/viewsController.js';
+import { toggleLike } from '../controllers/likesController.js';
 
 const router = Router();
 
@@ -37,7 +40,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/upload',protect, videoUploadLimit, uploadVideo, createVideo);
+router.post('/upload', protect, videoUploadLimit, uploadVideo, createVideo);
 
 /**
  * @swagger
@@ -63,6 +66,66 @@ router.post('/upload',protect, videoUploadLimit, uploadVideo, createVideo);
  *         description: Internal server error
  */
 router.get('/', getGlobalVideos);
+
+/**
+ * @swagger
+ * /api/video/trending:
+ *   get:
+ *     summary: Get trending videos
+ *     tags: [Videos]
+ *     responses:
+ *       200:
+ *         description: List of trending videos
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/trending', getTrendingVideos);
+
+/**
+ * @swagger
+ * /api/video/{id}/views:
+ *   post:
+ *     summary: Increment video views
+ *     tags: [Videos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Video ID
+ *     responses:
+ *       204:
+ *         description: Views incremented successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/:id/views', incrementViews);
+
+/**
+ * @swagger
+ * /api/video/{id}/like:
+ *   post:
+ *     summary: Toggle like on a video
+ *     tags: [Videos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Video ID
+ *     responses:
+ *       200:
+ *         description: Like toggled successfully
+ *       401:
+ *         description: Not authenticated
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/:id/like', protect, toggleLike);
 
 /**
  * @swagger
@@ -115,5 +178,28 @@ router.get('/user/:userId', getVideosByUser);
  *         description: Internal server error
  */
 router.get('/tag/:tag', getVideosByTag);
+
+/**
+ * @swagger
+ * /api/video/{id}/similar:
+ *   get:
+ *     summary: Get similar videos
+ *     tags: [Videos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Video ID
+ *     responses:
+ *       200:
+ *         description: List of similar videos
+ *       404:
+ *         description: Video not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/:id/similar', getSimilarVideos);
 
 export default router;

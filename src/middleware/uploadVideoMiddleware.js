@@ -2,19 +2,12 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
-const storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-        folder: "skillharvest/videos",
-        resource_type: "video",
-        format: "mp4",
-    },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
     limits: {
-        fileSize: 50 * 1024 *1024,
+        fileSize: 50 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
         // Accept video files only

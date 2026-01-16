@@ -1,5 +1,12 @@
 import prisma from "../config/db.js";
 
+/**
+ * Rate a video.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const rateVideo = async (req, res) => {
     const { videoId } = req.params;
     const { value } = req.body;
@@ -40,6 +47,13 @@ export const rateVideo = async (req, res) => {
     }
 };
 
+/**
+ * Get average rating and total counts for a specific video.
+ * 
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 export const getVideoRating = async (req, res) => {
     const { videoId } = req.params;
 
