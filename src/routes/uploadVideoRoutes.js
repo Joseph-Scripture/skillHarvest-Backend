@@ -6,7 +6,7 @@ import { getGlobalVideos, getVideosByTag, getVideosByUser } from '../controllers
 import { videoUploadLimit } from '../middleware/rateLimit.js'
 import { getSimilarVideos, getTrendingVideos } from '../controllers/trendingController.js';
 import { incrementViews } from '../controllers/viewsController.js';
-import { toggleLike } from '../controllers/likesController.js';
+import { toggleLike, getLikedVideos } from '../controllers/likesController.js';
 
 const router = Router();
 
@@ -201,5 +201,23 @@ router.get('/tag/:tag', getVideosByTag);
  *         description: Internal server error
  */
 router.get('/:id/similar', getSimilarVideos);
+
+/**
+ * @swagger
+ * /api/video/liked:
+ *   get:
+ *     summary: Get videos liked by the current user
+ *     tags: [Videos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of liked videos
+ *       401:
+ *         description: Not authenticated
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/liked', protect, getLikedVideos);
 
 export default router;

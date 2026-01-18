@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { toggleFollow, getFollowers } from '../controllers/followController.js';
+import { toggleFollow, getFollowers, getFollowStats, checkFollowStatus } from '../controllers/followController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
@@ -102,5 +102,27 @@ router.post('/:userId', protect, toggleFollow);
  *         description: Failed to fetch followers
  */
 router.get('/:userId/followers', getFollowers);
+
+/**
+ * @swagger
+ * /api/follow/{userId}/stats:
+ *   get:
+ *     summary: Get follow statistics for a user
+ *     tags: [Follow]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: Follow stats retrieved successfully
+ *       500:
+ *         description: Failed to fetch follow stats
+ */
+router.get('/:userId/stats', getFollowStats);
+router.get('/:userId/status', protect, checkFollowStatus);
 
 export default router;

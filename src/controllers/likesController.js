@@ -54,3 +54,53 @@ export const toggleLike = async (req, res) => {
         });
     }
 };
+export const getLikedVideos = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const likedVideos = await prisma.like.findMany({
+            where: { userId },
+            include: {
+                video: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                        tags: { include: { tag: true } },
+                        _count: {
+                            select: {
+                                comments: true,
+                                ratings: true,
+                                bookmarks: true,
+                                likes: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        const formattedVideos = likedVideos.map(l => ({
+            ...l.video,
+            views: l.video.views || 0,
+            tags: l.video.tags.map(vt => vt.tag),
+        }));
+
+        res.json({
+            success: true,
+            count: formattedVideos.length,
+            videos: formattedVideos,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to fetch liked videos",
+        });
+    }
+};

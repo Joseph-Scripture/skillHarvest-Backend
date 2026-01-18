@@ -46,8 +46,14 @@ export const createVideo = async (req, res) => {
         const durationInSeconds = uploadResult.duration;
         const publicId = uploadResult.public_id;
 
-        // Apply Cloudinary transformations to the URL
-        let videoUrl = uploadResult.secure_url.replace("/upload/", "/upload/f_auto,q_auto,w_1280/");
+        // Generate transformed URL using Cloudinary SDK for robustness
+        const videoUrl = cloudinary.url(publicId, {
+            resource_type: "video",
+            secure: true,
+            transformation: [
+                { width: 1280, crop: "scale", quality: "auto", fetch_format: "auto" }
+            ]
+        });
 
         if (!durationInSeconds || durationInSeconds < 120 || durationInSeconds > 300) {
 
@@ -58,10 +64,6 @@ export const createVideo = async (req, res) => {
             return res.status(400).json({
                 message: "Invalid video: Duration must be between 2 and 5 minutes."
             });
-        }
-
-        if (!videoUrl.toLowerCase().endsWith(".mp4")) {
-            videoUrl = `${videoUrl}.mp4`;
         }
 
         const video = await prisma.video.create({

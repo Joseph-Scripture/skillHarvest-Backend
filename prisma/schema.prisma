@@ -80,7 +80,7 @@ model Crop {
 }
 
 model VideoCrop {
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 
   crop   Crop   @relation(fields: [cropId], references: [id])
@@ -103,14 +103,14 @@ model Like {
   userId    String
   createdAt DateTime @default(now())
 
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 
   @@unique([userId, videoId])
 }
 
 model VideoTag {
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 
   tag   Tag    @relation(fields: [tagId], references: [id])
@@ -127,7 +127,7 @@ model Comment {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 }
 
@@ -138,7 +138,7 @@ model Rating {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 
   @@unique([userId, videoId])
@@ -151,7 +151,7 @@ model Bookmark {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  video   Video  @relation(fields: [videoId], references: [id])
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 
   @@unique([userId, videoId])

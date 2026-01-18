@@ -187,6 +187,7 @@ export const getGlobalVideos = async (req, res) => {
     const skip = (page - 1) * limit;
 
     try {
+        console.log(`[getGlobalVideos] Fetching videos with skip=${skip}, limit=${limit}`);
         const [videos, total] = await Promise.all([
             prisma.video.findMany({
                 skip,
@@ -231,6 +232,7 @@ export const getGlobalVideos = async (req, res) => {
             }),
             prisma.video.count(),
         ]);
+        console.log(`[getGlobalVideos] Successfully fetched ${videos.length} videos`);
 
         const formattedVideos = videos.map(video => ({
             ...video,
