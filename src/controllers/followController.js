@@ -29,10 +29,10 @@ export const toggleFollow = async (req, res) => {
                         followingId: userId,
                     },
                 },
-        });
+            });
 
-        following = false;
-    } else {
+            following = false;
+        } else {
             await prisma.follow.create({
                 data: {
                     followerId: currentUserId,
@@ -40,25 +40,25 @@ export const toggleFollow = async (req, res) => {
                 },
             });
 
-        following = true;
-    }
+            following = true;
+        }
 
-    // FAST COUNTS (DB-level)
-    const [followersCount, followingCount] = await Promise.all([
-        prisma.follow.count({
-            where: { followingId: userId },
-        }),
-        prisma.follow.count({
-            where: { followerId: userId },
-        }),
-    ]);
+        // FAST COUNTS (DB-level)
+        const [followersCount, followingCount] = await Promise.all([
+            prisma.follow.count({
+                where: { followingId: userId },
+            }),
+            prisma.follow.count({
+                where: { followerId: userId },
+            }),
+        ]);
 
-    return res.json({
-        success: true,
-        following,
-        followersCount,
-        followingCount,
-    });
+        return res.json({
+            success: true,
+            following,
+            followersCount,
+            followingCount,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -106,4 +106,56 @@ export const getFollowers = async (req, res) => {
 };
 
 
+
+export const getFollowStats = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const [followersCount, followingCount] = await Promise.all([
+            prisma.follow.count({
+                where: { followingId: userId },
+            }),
+            prisma.follow.count({
+                where: { followerId: userId },
+            }),
+        ]);
+
+        return res.json({
+            success: true,
+            followersCount,
+            followingCount,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to fetch follow stats",
+        });
+    }
+};
+
+export const checkFollowStatus = async (req, res) => {
+    const { userId } = req.params;
+    const currentUserId = req.user.id;
+
+    try {
+        const follow = await prisma.follow.findUnique({
+            where: {
+                followerId_followingId: {
+                    followerId: currentUserId,
+                    followingId: userId,
+                },
+            },
+        });
+
+        res.json({
+            success: true,
+            isFollowing: !!follow,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Failed to check follow status",
+        });
+    }
+};
 

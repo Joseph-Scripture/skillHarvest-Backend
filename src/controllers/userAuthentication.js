@@ -71,7 +71,7 @@ export const login = async (req, res) => {
 
 
         if (phoneNumber !== user.phoneNumber || name !== user.name) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid phone number or name" });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -84,7 +84,7 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, cookieOptions);
 
-        const { password: _p, email: _e, ...userWithoutPassword } = user;
+        const { password: _p, email: _e, resetCode:_resetCode,...userWithoutPassword } = user;
 
         return res.status(200).json({
             success: true,
